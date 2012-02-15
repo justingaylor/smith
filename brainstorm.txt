@@ -1,0 +1,57 @@
+======================================
+  BRAINSTORM DOC FOR RAKU AI LIBRARY
+======================================
+
+-------
+PROBLEM
+-------
+The current problem we have in the world is that so much of "intelligent" work does not actually require intelligence, but actually simply requires advanced pattern-matching (copy-past this kind of value to this place, etc).  The world needs freely available AI strong and robust enough to handle these issues, so that the minds of human beings will no longer be bound by the shackles of menial labor.
+
+Examples (and requirements) of work which AI could do for us, given sufficiently powerful algorithms/inference capabilities:
+* construction work
+  - intelligent navigation/obstacle avoidance
+  - object recognition/image processing
+  - goal formation
+  - task ordering/planning
+  - dealing with fuzzy data
+* office administrative work
+  - natural language processing
+  - goal formation
+
+-----
+GOALS
+-----
+The goals of the this project are to create an AI framework with the following features:
+  - Efficient = core code runs fast
+  - Highly-concurrent = many things can be done concurrently in a safe, correct, and efficient manner
+  - Extensible = new functionality can be easily added by implement new pluggable modules 
+  - Dynamic = code can be created/modified by the system as needed
+  - Fully-featured = out-of-the-box functionality is covers most applications
+  - Powerful = Features are well-developed and give a lot of problem-solving power
+  - Flexible = system can be used for a wide variety of applications (games, robotics, web agents, etc)
+  - Hot-fixable = patches can be deployed to the system while it is running
+  - Transparent = system admins can access a wide variety of system information 
+
+--------
+FEATURES
+--------
+* Software is hot-patchable 
+  - achieved with Clojure mutable vars
+  -buggy functions can be updated while system is running)
+*
+
+-------------
+FUNCTIONALITY
+-------------
+* Users can...
+ - Start the agent framework
+ - Define agent which can hook into the framework and run
+   - Agents have the following components:
+     1) Perceptors - means for perceiving their world
+     2) World Representation - means to store information about their world
+     3) Internal Logic - means of forming goals and deciding actions
+     4) Effectors - means of performing actions within their world
+     * Achievable with multimethods????
+ - Using API, specify remote patches to the agent
+   - all agents registered in the system asynchronously download the patches from a patch server
+   - records kept for which agents software is what version
