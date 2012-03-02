@@ -1,20 +1,29 @@
 ======================================
-  BRAINSTORM DOC FOR RAKU AI LIBRARY
+ BRAINSTORM DOC FOR SMITH AI LIBRARY
 ======================================
 
 -------
 PROBLEM
 -------
-The current problem we have in the world is that so much of "intelligent" work does not actually require intelligence, but actually simply requires advanced pattern-matching (copy-past this kind of value to this place, etc).  The world needs freely available AI strong and robust enough to handle these issues, so that the minds of human beings will no longer be bound by the shackles of menial labor.
+The current problem we have in the world is that so much of work does not 
+actually require intelligence, but actually simply requires advanced 
+pattern-matching (copy-past this kind of value to this place, etc).  The world 
+needs freely available AI strong and robust enough to handle these issues so 
+that the minds of human beings will no longer be required for menial tasks.
 
-Examples (and requirements) of work which AI could do for us, given sufficiently powerful algorithms/inference capabilities:
-* construction work
+Examples of work which AI could do for us, given sufficiently powerful 
+algorithms/capabilities:
+* Construction Work
   - intelligent navigation/obstacle avoidance
   - object recognition/image processing
   - goal formation
   - task ordering/planning
   - dealing with fuzzy data
-* office administrative work
+* Public Transportation
+  - obstacle avoidance
+  - path-finding & navigation
+  - speech recognition
+* Office Administrative Work
   - natural language processing
   - goal formation
 
@@ -36,9 +45,9 @@ The goals of the this project are to create an AI framework with the following f
 FEATURES
 --------
 * Software is hot-patchable 
-  - achieved with Clojure mutable vars
-  -buggy functions can be updated while system is running)
-*
+  - achievable with Clojure mutable vars
+  - Ruby could also support this with its dynamic binding, anonymous functions, etc.
+  -buggy functions can be updated while system is running
 
 -------------
 FUNCTIONALITY
@@ -51,7 +60,7 @@ FUNCTIONALITY
      2) World Representation - means to store information about their world
      3) Internal Logic - means of forming goals and deciding actions
      4) Effectors - means of performing actions within their world
-     * Achievable with multimethods????
+      (Achievable with Clojure multimethods????)
  - Using API, specify remote patches to the agent
    - all agents registered in the system asynchronously download the patches from a patch server
    - records kept for which agents software is what version
