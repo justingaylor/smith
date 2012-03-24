@@ -1,6 +1,7 @@
-# http://en.wikibooks.org/wiki/Ruby_Programming/Unit_testing
+require File.expand_path( File.join( File.dirname(__FILE__), "../../helper" ) )
+
 require 'test/unit'
-require 'membership_function'
+require 'smith/fuzzy/membership_function'
 
 class MembershipFunctionTest < Test::Unit::TestCase
 
