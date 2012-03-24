@@ -38,21 +38,21 @@ class TriangularMembershipFunctionTest < Test::Unit::TestCase
     delta = 0.000000000000001
     peak = 0.0
     f = Smith::Fuzzy::TriangularMembershipFunction.new( 1.0, peak )
-    assert ((f.call(0.0+peak) - 1.0).abs <= delta), message
-    assert ((f.call(1.0+peak) - 0.0).abs <= delta), message
-    assert ((f.call(-1.0+peak) - 0.0).abs <= delta), message
-    assert ((f.call((1.0/5.0)+peak) - 0.8).abs <= delta), message
-    assert ((f.call((-1.0/5.0)+peak) - 0.8).abs <= delta), message
-    assert ((f.call((1.0/3.0)+peak) - (2.0/3.0)).abs <= delta), message
-    assert ((f.call((-1.0/3.0)+peak) - (2.0/3.0)).abs <= delta), message
-    assert ((f.call(0.5+peak) - 0.5).abs <= delta), message
-    assert ((f.call(-0.5+peak) - 0.5).abs <= delta), message
-    assert ((f.call((4.0/5.0)+peak) - 0.2).abs <= delta), message
-    assert ((f.call((-4.0/5.0)+peak) - 0.2).abs <= delta), message
-    assert ((f.call(1.01+peak) - 0.0).abs <= delta), message
-    assert ((f.call(-1.01+peak) - 0.0).abs <= delta), message
-    assert ((f.call(100+peak) - 0.0).abs <= delta), message
-    assert ((f.call(-100+peak) - 0.0).abs <= delta), message
+    assert_in_delta 1.0, f.call(0.0+peak), delta, message
+    assert_in_delta 0.0, f.call(1.0+peak), delta, message
+    assert_in_delta 0.0, f.call(-1.0+peak), delta, message
+    assert_in_delta 0.8, f.call((1.0/5.0)+peak), delta, message
+    assert_in_delta 0.8, f.call((-1.0/5.0)+peak), delta, message
+    assert_in_delta (2.0/3.0), f.call((1.0/3.0)+peak), delta, message
+    assert_in_delta (2.0/3.0), f.call((-1.0/3.0)+peak), delta, message
+    assert_in_delta 0.5, f.call(0.5+peak), delta, message
+    assert_in_delta 0.5, f.call(-0.5+peak), delta, message
+    assert_in_delta 0.2, f.call((4.0/5.0)+peak), delta, message
+    assert_in_delta 0.2, f.call((-4.0/5.0)+peak), delta, message
+    assert_in_delta 0.0, f.call(1.01+peak), delta, message
+    assert_in_delta 0.0, f.call(-1.01+peak), delta, message
+    assert_in_delta 0.0, f.call(100+peak), delta, message
+    assert_in_delta 0.0, f.call(-100+peak), delta, message
   end
 
   def test_functional_correctness_shifted_positive
@@ -60,21 +60,21 @@ class TriangularMembershipFunctionTest < Test::Unit::TestCase
     delta = 0.000000000000001
     peak = 5.0
     f = Smith::Fuzzy::TriangularMembershipFunction.new( 1.0, peak )
-    assert ((f.call(0.0+peak) - 1.0).abs <= delta), message
-    assert ((f.call(1.0+peak) - 0.0).abs <= delta), message
-    assert ((f.call(-1.0+peak) - 0.0).abs <= delta), message
-    assert ((f.call((1.0/5.0)+peak) - 0.8).abs <= delta), message
-    assert ((f.call((-1.0/5.0)+peak) - 0.8).abs <= delta), message
-    assert ((f.call((1.0/3.0)+peak) - (2.0/3.0)).abs <= delta), message
-    assert ((f.call((-1.0/3.0)+peak) - (2.0/3.0)).abs <= delta), message
-    assert ((f.call(0.5+peak) - 0.5).abs <= delta), message
-    assert ((f.call(-0.5+peak) - 0.5).abs <= delta), message
-    assert ((f.call((4.0/5.0)+peak) - 0.2).abs <= delta), message
-    assert ((f.call((-4.0/5.0)+peak) - 0.2).abs <= delta), message
-    assert ((f.call(1.01+peak) - 0.0).abs <= delta), message
-    assert ((f.call(-1.01+peak) - 0.0).abs <= delta), message
-    assert ((f.call(100+peak) - 0.0).abs <= delta), message
-    assert ((f.call(-100+peak) - 0.0).abs <= delta), message
+    assert_in_delta 1.0, f.call(0.0+peak), delta, message
+    assert_in_delta 0.0, f.call(1.0+peak), delta, message
+    assert_in_delta 0.0, f.call(-1.0+peak), delta, message
+    assert_in_delta 0.8, f.call((1.0/5.0)+peak), delta, message
+    assert_in_delta 0.8, f.call((-1.0/5.0)+peak), delta, message
+    assert_in_delta (2.0/3.0), f.call((1.0/3.0)+peak), delta, message
+    assert_in_delta (2.0/3.0), f.call((-1.0/3.0)+peak), delta, message
+    assert_in_delta 0.5, f.call(0.5+peak), delta, message
+    assert_in_delta 0.5, f.call(-0.5+peak), delta, message
+    assert_in_delta 0.2, f.call((4.0/5.0)+peak), delta, message
+    assert_in_delta 0.2, f.call((-4.0/5.0)+peak), delta, message
+    assert_in_delta 0.0, f.call(1.01+peak), delta, message
+    assert_in_delta 0.0, f.call(-1.01+peak), delta, message
+    assert_in_delta 0.0, f.call(100+peak), delta, message
+    assert_in_delta 0.0, f.call(-100+peak), delta, message
   end
   
   def test_functional_correctness_shifted_negative
@@ -82,21 +82,21 @@ class TriangularMembershipFunctionTest < Test::Unit::TestCase
     delta = 0.000000000000001
     peak = -5.0
     f = Smith::Fuzzy::TriangularMembershipFunction.new( 1.0, peak )
-    assert ((f.call(0.0+peak) - 1.0).abs <= delta), message
-    assert ((f.call(1.0+peak) - 0.0).abs <= delta), message
-    assert ((f.call(-1.0+peak) - 0.0).abs <= delta), message
-    assert ((f.call((1.0/5.0)+peak) - 0.8).abs <= delta), message
-    assert ((f.call((-1.0/5.0)+peak) - 0.8).abs <= delta), message
-    assert ((f.call((1.0/3.0)+peak) - (2.0/3.0)).abs <= delta), message
-    assert ((f.call((-1.0/3.0)+peak) - (2.0/3.0)).abs <= delta), message
-    assert ((f.call(0.5+peak) - 0.5).abs <= delta), message
-    assert ((f.call(-0.5+peak) - 0.5).abs <= delta), message
-    assert ((f.call((4.0/5.0)+peak) - 0.2).abs <= delta), message
-    assert ((f.call((-4.0/5.0)+peak) - 0.2).abs <= delta), message
-    assert ((f.call(1.01+peak) - 0.0).abs <= delta), message
-    assert ((f.call(-1.01+peak) - 0.0).abs <= delta), message
-    assert ((f.call(100+peak) - 0.0).abs <= delta), message
-    assert ((f.call(-100+peak) - 0.0).abs <= delta), message
+    assert_in_delta 1.0, f.call(0.0+peak), delta, message
+    assert_in_delta 0.0, f.call(1.0+peak), delta, message
+    assert_in_delta 0.0, f.call(-1.0+peak), delta, message
+    assert_in_delta 0.8, f.call((1.0/5.0)+peak), delta, message
+    assert_in_delta 0.8, f.call((-1.0/5.0)+peak), delta, message
+    assert_in_delta (2.0/3.0), f.call((1.0/3.0)+peak), delta, message
+    assert_in_delta (2.0/3.0), f.call((-1.0/3.0)+peak), delta, message
+    assert_in_delta 0.5, f.call(0.5+peak), delta, message
+    assert_in_delta 0.5, f.call(-0.5+peak), delta, message
+    assert_in_delta 0.2, f.call((4.0/5.0)+peak), delta, message
+    assert_in_delta 0.2, f.call((-4.0/5.0)+peak), delta, message
+    assert_in_delta 0.0, f.call(1.01+peak), delta, message
+    assert_in_delta 0.0, f.call(-1.01+peak), delta, message
+    assert_in_delta 0.0, f.call(100+peak), delta, message
+    assert_in_delta 0.0, f.call(-100+peak), delta, message
   end
   
   def test_functional_correctness_narrowed
@@ -104,19 +104,19 @@ class TriangularMembershipFunctionTest < Test::Unit::TestCase
     delta = 0.000000000000001
     peak = 0.0
     f = Smith::Fuzzy::TriangularMembershipFunction.new( 2.0, peak )
-    assert ((f.call(0.0+peak) - 1.0).abs <= delta), message
-    assert ((f.call(0.5+peak) - 0.0).abs <= delta), message
-    assert ((f.call(-0.5+peak) - 0.0).abs <= delta), message
-    assert ((f.call((1.0/5.0)+peak) - 0.6).abs <= delta), message
-    assert ((f.call((-1.0/5.0)+peak) - 0.6).abs <= delta), message
-    assert ((f.call(0.25+peak) - 0.5).abs <= delta), message
-    assert ((f.call(-0.25+peak) - 0.5).abs <= delta), message
-    assert ((f.call((2.0/5.0)+peak) - 0.2).abs <= delta), message
-    assert ((f.call((-2.0/5.0)+peak) - 0.2).abs <= delta), message
-    assert ((f.call(1.01+peak) - 0.0).abs <= delta), message
-    assert ((f.call(-1.01+peak) - 0.0).abs <= delta), message
-    assert ((f.call(100+peak) - 0.0).abs <= delta), message
-    assert ((f.call(-100+peak) - 0.0).abs <= delta), message
+    assert_in_delta 1.0, f.call(0.0+peak), delta, message
+    assert_in_delta 0.0, f.call(0.5+peak), delta, message
+    assert_in_delta 0.0, f.call(-0.5+peak), delta, message
+    assert_in_delta 0.6, f.call((1.0/5.0)+peak), delta, message
+    assert_in_delta 0.6, f.call((-1.0/5.0)+peak), delta, message
+    assert_in_delta 0.5, f.call(0.25+peak), delta, message
+    assert_in_delta 0.5, f.call(-0.25+peak), delta, message
+    assert_in_delta 0.2, f.call((2.0/5.0)+peak), delta, message
+    assert_in_delta 0.2, f.call((-2.0/5.0)+peak), delta, message
+    assert_in_delta 0.0, f.call(1.01+peak), delta, message
+    assert_in_delta 0.0, f.call(-1.01+peak), delta, message
+    assert_in_delta 0.0, f.call(100+peak), delta, message
+    assert_in_delta 0.0, f.call(-100+peak), delta, message
   end
   
   def test_functional_correctness_widened
@@ -124,19 +124,19 @@ class TriangularMembershipFunctionTest < Test::Unit::TestCase
     delta = 0.000000000000001
     peak = 0.0
     f = Smith::Fuzzy::TriangularMembershipFunction.new( 0.5, peak )
-    assert ((f.call(0.0+peak) - 1.0).abs <= delta), message
-    assert ((f.call(2.0+peak) - 0.0).abs <= delta), message
-    assert ((f.call(-2.0+peak) - 0.0).abs <= delta), message
-    assert ((f.call((1.0/5.0)+peak) - 0.9).abs <= delta), message
-    assert ((f.call((-1.0/5.0)+peak) - 0.9).abs <= delta), message
-    assert ((f.call(1.0+peak) - 0.5).abs <= delta), message
-    assert ((f.call(-1.0+peak) - 0.5).abs <= delta), message
-    assert ((f.call((2.0/5.0)+peak) - 0.8).abs <= delta), message
-    assert ((f.call((-2.0/5.0)+peak) - 0.8).abs <= delta), message
-    assert ((f.call(2.01+peak) - 0.0).abs <= delta), message
-    assert ((f.call(-2.01+peak) - 0.0).abs <= delta), message
-    assert ((f.call(100+peak) - 0.0).abs <= delta), message
-    assert ((f.call(-100+peak) - 0.0).abs <= delta), message
+    assert_in_delta 1.0, f.call(0.0+peak), delta, message
+    assert_in_delta 0.0, f.call(2.0+peak), delta, message
+    assert_in_delta 0.0, f.call(-2.0+peak), delta, message
+    assert_in_delta 0.9, f.call((1.0/5.0)+peak), delta, message
+    assert_in_delta 0.9, f.call((-1.0/5.0)+peak), delta, message
+    assert_in_delta 0.5, f.call(1.0+peak), delta, message
+    assert_in_delta 0.5, f.call(-1.0+peak), delta, message
+    assert_in_delta 0.8, f.call((2.0/5.0)+peak), delta, message
+    assert_in_delta 0.8, f.call((-2.0/5.0)+peak), delta, message
+    assert_in_delta 0.0, f.call(2.01+peak), delta, message
+    assert_in_delta 0.0, f.call(-2.01+peak), delta, message
+    assert_in_delta 0.0, f.call(100+peak), delta, message
+    assert_in_delta 0.0, f.call(-100+peak), delta, message
   end
   
 end
