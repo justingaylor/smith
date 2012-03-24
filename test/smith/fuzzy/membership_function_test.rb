@@ -11,6 +11,14 @@ class MembershipFunctionTest < Test::Unit::TestCase
 	    "Object created was not a Smith::Fuzzy::MembershipFunction"
   end
   
+  def test_nil_lambda_invocation_raises_exception
+	  mf = Smith::Fuzzy::MembershipFunction.new
+	  assert_not_nil mf, "Was nil after created"
+	  assert_raise( Smith::Fuzzy::MembershipFunctionNotSetError ) do
+	    mf.call(0)
+    end
+  end
+  
   def test_creation_with_lambda
     mf = Smith::Fuzzy::MembershipFunction.new( lambda {|v| 0.5 } )
 	  assert_not_nil mf, "Was nil after created"
