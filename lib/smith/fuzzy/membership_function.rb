@@ -3,8 +3,10 @@ module Smith
   module Fuzzy
     class MembershipFunction
       attr_writer :f
+      attr_accessor :name
       
-      def initialize( f = nil )
+      def initialize( name, f = nil )
+        @name = name
         @f = f
       end
       

@@ -5,27 +5,33 @@ require 'smith/fuzzy/triangular_membership_function'
 
 class TriangularMembershipFunctionTest < Test::Unit::TestCase
   
-  def test_create_slope_required
+  def test_create_name_required
     assert_raise( ArgumentError ) do
       peak = Smith::Fuzzy::TriangularMembershipFunction.new
     end
   end
   
+  def test_create_slope_required
+    assert_raise( ArgumentError ) do
+      peak = Smith::Fuzzy::TriangularMembershipFunction.new( "small" )
+    end
+  end
+  
   def test_create_peak_x_required
     assert_raise( ArgumentError ) do
-      peak = Smith::Fuzzy::TriangularMembershipFunction.new( 1.0 )
+      peak = Smith::Fuzzy::TriangularMembershipFunction.new( "small", 1.0 )
     end
   end
   
   def test_creation
-    peak = Smith::Fuzzy::TriangularMembershipFunction.new( 1.0, 0.0 )
+    peak = Smith::Fuzzy::TriangularMembershipFunction.new( "small", 1.0, 0.0 )
     assert_not_nil peak, "Object should not be nil after creation"
     assert_kind_of Smith::Fuzzy::TriangularMembershipFunction, peak, 
       "Object should be of type Smith::Fuzzy::TriangularMembershipFunction"
   end
   
   def test_accepts_fixnum_properly
-    peak = Smith::Fuzzy::TriangularMembershipFunction.new( 1.0, 0.0 )
+    peak = Smith::Fuzzy::TriangularMembershipFunction.new( "small", 1.0, 0.0 )
     message = "Value not in expected delta"
     delta = 0.000000000000001
     assert ((peak.call(0) - 1.0).abs <= delta), message
@@ -37,7 +43,7 @@ class TriangularMembershipFunctionTest < Test::Unit::TestCase
     message = "Value not in expected delta"
     delta = 0.000000000000001
     peak = 0.0
-    f = Smith::Fuzzy::TriangularMembershipFunction.new( 1.0, peak )
+    f = Smith::Fuzzy::TriangularMembershipFunction.new( "small", 1.0, peak )
     assert_in_delta 1.0, f.call(0.0+peak), delta, message
     assert_in_delta 0.0, f.call(1.0+peak), delta, message
     assert_in_delta 0.0, f.call(-1.0+peak), delta, message
@@ -59,7 +65,7 @@ class TriangularMembershipFunctionTest < Test::Unit::TestCase
     message = "Value not in expected delta"
     delta = 0.000000000000001
     peak = 5.0
-    f = Smith::Fuzzy::TriangularMembershipFunction.new( 1.0, peak )
+    f = Smith::Fuzzy::TriangularMembershipFunction.new( "positive", 1.0, peak )
     assert_in_delta 1.0, f.call(0.0+peak), delta, message
     assert_in_delta 0.0, f.call(1.0+peak), delta, message
     assert_in_delta 0.0, f.call(-1.0+peak), delta, message
@@ -81,7 +87,7 @@ class TriangularMembershipFunctionTest < Test::Unit::TestCase
     message = "Value not in expected delta"
     delta = 0.000000000000001
     peak = -5.0
-    f = Smith::Fuzzy::TriangularMembershipFunction.new( 1.0, peak )
+    f = Smith::Fuzzy::TriangularMembershipFunction.new( "negative", 1.0, peak )
     assert_in_delta 1.0, f.call(0.0+peak), delta, message
     assert_in_delta 0.0, f.call(1.0+peak), delta, message
     assert_in_delta 0.0, f.call(-1.0+peak), delta, message
@@ -103,7 +109,7 @@ class TriangularMembershipFunctionTest < Test::Unit::TestCase
     message = "Value not in expected delta"
     delta = 0.000000000000001
     peak = 0.0
-    f = Smith::Fuzzy::TriangularMembershipFunction.new( 2.0, peak )
+    f = Smith::Fuzzy::TriangularMembershipFunction.new( "narrow", 2.0, peak )
     assert_in_delta 1.0, f.call(0.0+peak), delta, message
     assert_in_delta 0.0, f.call(0.5+peak), delta, message
     assert_in_delta 0.0, f.call(-0.5+peak), delta, message
@@ -123,7 +129,7 @@ class TriangularMembershipFunctionTest < Test::Unit::TestCase
     message = "Value not in expected delta"
     delta = 0.000000000000001
     peak = 0.0
-    f = Smith::Fuzzy::TriangularMembershipFunction.new( 0.5, peak )
+    f = Smith::Fuzzy::TriangularMembershipFunction.new( "wide", 0.5, peak )
     assert_in_delta 1.0, f.call(0.0+peak), delta, message
     assert_in_delta 0.0, f.call(2.0+peak), delta, message
     assert_in_delta 0.0, f.call(-2.0+peak), delta, message

@@ -3,7 +3,7 @@ require File.expand_path( File.join( File.dirname(__FILE__), 'membership_functio
 module Smith
   module Fuzzy
     class TriangularMembershipFunction < Smith::Fuzzy::MembershipFunction
-      def initialize( slope, peak_x )
+      def initialize( name, slope, peak_x )
         @slope = slope.to_f
         @peak_x = peak_x.to_f
         f = lambda do |x|
@@ -15,7 +15,7 @@ module Smith
           # return 0.0 if we are outside of the triangular function's range
           res = (x < ((1.0/@slope)+@peak_x)) ? (-@slope*x + 1.0) + @peak_x : 0.0
         end
-        super( f )
+        super( name, f )
       end
     end
   end

@@ -6,12 +6,6 @@
 #Smith::Fuzzy::Operator           := And, Or, Not, etc; operate on Smith::Fuzzy::Variable objects
 #Smith::Fuzzy::RuleMatrix         := A collection of rules to control behavior
 
-=begin
-
-
-
-=end
-
 
 module Smith
   module Fuzzy
