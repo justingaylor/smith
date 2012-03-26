@@ -1,26 +1,27 @@
+require 'smith/fuzzy/piecemeal_function'
 
 module Smith
   module Fuzzy
-    class MembershipFunction
-      attr_writer :f
+    class MembershipFunction < Smith::Fuzzy::PiecemealFunction
       attr_accessor :name
       
-      def initialize( name, f = nil )
+      def initialize( name )
+        super()
         @name = name
-        @f = f
       end
       
       def call( n )
         # Check that the membership function (lambda) has been set
-        unless @f
+        unless self.segments > 0
           raise MembershipFunctionNotSetError, 
-            "Membership function is nil. Set using MembershipFunction#f attribute."
+            "Membership function is nil. Set with f attribute."
         end
         
-        result = @f.call( n )
-        
+        #result = call( n )
+        result = super( n )
+
         # Check that result was a proper Degree of Membership (0.0 to 1.0)
-        if result < 0.0 or 1.0 < result
+        if not (0.0..1.0).member?( result )
           raise InvalidMembershipValueError, 
             "Membership value must be between 0.0 and 1.0. Was #{result}."
         end
