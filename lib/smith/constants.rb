@@ -1,3 +1,4 @@
 module Smith
   INFINITY = 1.0/0.0
+  EULER = 2.718281828459045
 end

@@ -1,7 +1,6 @@
 require File.expand_path( File.join( File.dirname(__FILE__), "../../helper" ) )
 
 require 'test/unit'
-require 'minitest/autorun'
 require 'smith/fuzzy/triangular_membership_function'
 
 class TriangularMembershipFunctionTest < Test::Unit::TestCase

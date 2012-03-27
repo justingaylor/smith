@@ -1,5 +1,5 @@
-require 'smith/constants'
-require 'smith/fuzzy/function_segment'
+require File.expand_path( File.join( File.dirname(__FILE__), '../constants' ) )
+require File.expand_path( File.join( File.dirname(__FILE__), 'function_segment' ) )
 
 module Smith
   module Fuzzy

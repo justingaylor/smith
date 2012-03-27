@@ -1,4 +1,4 @@
-require 'smith/fuzzy/piecemeal_function'
+require File.expand_path( File.join( File.dirname(__FILE__), 'piecemeal_function' ) )
 
 module Smith
   module Fuzzy
