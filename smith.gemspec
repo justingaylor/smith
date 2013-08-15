@@ -6,7 +6,9 @@ Gem::Specification.new do |s|
   s.description = "A framework for rapidly prototyping AI agents"
   s.authors     = ["Justin Gaylor"]
   s.email       = 'justin.gaylor@gmail.com'
-  s.files       = ["lib/smith.rb"] + Dir.glob("lib/**/*.rb")
+  s.files       = ["Gemfile", "lib/smith.rb"]
+  s.files      += Dir.glob("lib/**/*.rb")                                           # Source Files
+  s.files      += Dir.glob("features/**/*.feature") + Dir.glob("features/**/*.rb")  # Cucumber features
   s.homepage    = 'https://github.com/justingaylor/smith'
   s.license     = 'MIT'
 end
