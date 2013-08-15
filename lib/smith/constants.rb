@@ -1,4 +1,7 @@
 module Smith
-  INFINITY = 1.0/0.0
-  EULER = 2.718281828459045
+  # The value Infinity
+  INF = 1.0/0.0
+  
+  # Acceptable error range for floats
+  DELTA = 0.00000000000001
 end

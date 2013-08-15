@@ -5,13 +5,13 @@
 -------
 PROBLEM
 -------
-The current problem we have in the world is that so much of work does not 
-actually require intelligence, but actually simply requires advanced 
-pattern-matching (copy-past this kind of value to this place, etc).  The world 
-needs freely available AI strong and robust enough to handle these issues so 
+The current problem we have in the world is that so much of work does not
+actually require intelligence, but actually simply requires advanced
+pattern-matching (copy-past this kind of value to this place, etc).  The world
+needs freely available AI strong and robust enough to handle these issues so
 that the minds of human beings will no longer be required for menial tasks.
 
-Examples of work which AI could do for us, given sufficiently powerful 
+Examples of work which AI could do for us, given sufficiently powerful
 algorithms/capabilities:
 * Construction Work
   - intelligent navigation/obstacle avoidance
@@ -33,21 +33,21 @@ GOALS
 The goals of the this project are to create an AI framework with the following features:
   - Efficient = core code runs fast
   - Highly-concurrent = many things can be done concurrently in a safe, correct, and efficient manner
-  - Extensible = new functionality can be easily added by implement new pluggable modules 
+  - Extensible = new functionality can be easily added by implement new pluggable modules
   - Dynamic = code can be created/modified by the system as needed
   - Fully-featured = out-of-the-box functionality is covers most applications
   - Powerful = Features are well-developed and give a lot of problem-solving power
   - Flexible = system can be used for a wide variety of applications (games, robotics, web agents, etc)
   - Hot-fixable = patches can be deployed to the system while it is running
-  - Transparent = system admins can access a wide variety of system information 
+  - Transparent = system admins can access a wide variety of system information
 
 --------
 FEATURES
 --------
-* Software is hot-patchable 
+* Software is hot-patchable
+  - buggy functions can be updated while system is running
   - achievable with Clojure mutable vars
   - Ruby could also support this with its dynamic binding, anonymous functions, etc.
-  -buggy functions can be updated while system is running
 
 -------------
 FUNCTIONALITY
