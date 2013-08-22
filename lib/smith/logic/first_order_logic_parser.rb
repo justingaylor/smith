@@ -2,7 +2,7 @@ require 'parslet'
 
 module Smith
   module Logic
-    class FirstOrderLogic < Parslet::Parser
+    class FirstOrderLogicParser < Parslet::Parser
       #############################################
       # SINGLE CHARACTER RULES
       #############################################
@@ -60,19 +60,19 @@ end
 # Tests
 run_tests = true
 if run_tests
-  puts Smith::Logic::FirstOrderLogic.new.parse("x3")       == {:var => "x3"}
-  puts Smith::Logic::FirstOrderLogic.new.parse("x")        == {:var => "x"}
-  puts Smith::Logic::FirstOrderLogic.new.parse("var1")     == {:var => "var1"}
+  puts Smith::Logic::FirstOrderLogicParser.new.parse("x3")       == {:var => "x3"}
+  puts Smith::Logic::FirstOrderLogicParser.new.parse("x")        == {:var => "x"}
+  puts Smith::Logic::FirstOrderLogicParser.new.parse("var1")     == {:var => "var1"}
 
-  puts Smith::Logic::FirstOrderLogic.new.parse("D")        == {:const => "D"}
-  puts Smith::Logic::FirstOrderLogic.new.parse("JIM")      == {:const => "JIM"}
-  puts Smith::Logic::FirstOrderLogic.new.parse("JOE ")     == {:const => "JOE"}
+  puts Smith::Logic::FirstOrderLogicParser.new.parse("D")        == {:const => "D"}
+  puts Smith::Logic::FirstOrderLogicParser.new.parse("JIM")      == {:const => "JIM"}
+  puts Smith::Logic::FirstOrderLogicParser.new.parse("JOE ")     == {:const => "JOE"}
 
-  puts Smith::Logic::FirstOrderLogic.new.parse("Friend")   == {:pred => "Friend"}
-  puts Smith::Logic::FirstOrderLogic.new.parse("Brother ") == {:pred => "Brother"}
+  puts Smith::Logic::FirstOrderLogicParser.new.parse("Friend")   == {:pred => "Friend"}
+  puts Smith::Logic::FirstOrderLogicParser.new.parse("Brother ") == {:pred => "Brother"}
 
-  puts Smith::Logic::FirstOrderLogic.new.parse("&")   == {:and => "&"}
-  puts Smith::Logic::FirstOrderLogic.new.parse("|")   == {:or => "|"}
-  puts Smith::Logic::FirstOrderLogic.new.parse("=>")  == {:implies => "=>"}
-  puts Smith::Logic::FirstOrderLogic.new.parse("<=>") == {:iff => "<=>"}
+  puts Smith::Logic::FirstOrderLogicParser.new.parse("&")   == {:and => "&"}
+  puts Smith::Logic::FirstOrderLogicParser.new.parse("|")   == {:or => "|"}
+  puts Smith::Logic::FirstOrderLogicParser.new.parse("=>")  == {:implies => "=>"}
+  puts Smith::Logic::FirstOrderLogicParser.new.parse("<=>") == {:iff => "<=>"}
 end
