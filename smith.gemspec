@@ -21,5 +21,6 @@ Gem::Specification.new do |s|
 
   # Testing & Debugging
   s.add_development_dependency 'cucumber'
+  s.add_development_dependency 'rspec'
   s.add_development_dependency 'pry'
 end
