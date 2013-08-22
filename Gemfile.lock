@@ -1,3 +1,9 @@
+PATH
+  remote: .
+  specs:
+    smith (0.0.1)
+      parslet
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -29,5 +35,5 @@ PLATFORMS
 
 DEPENDENCIES
   cucumber
-  parslet
   pry
+  smith!
