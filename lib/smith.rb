@@ -1,1 +1,1 @@
-require 'smith/agent'
+require 'smith/logic/fol_parser'

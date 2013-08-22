@@ -2,7 +2,7 @@ require 'parslet'
 
 module Smith
   module Logic
-    class FirstOrderLogicParser < Parslet::Parser
+    class FolParser < Parslet::Parser
       #############################################
       # SINGLE CHARACTER RULES
       #############################################
@@ -18,6 +18,19 @@ module Smith
       rule(:space?)      { space.maybe }
 
       #############################################
+      # MULTIPLE CHARACTER RULES
+      #############################################
+
+      # A lower-case alphanum is a lower-case letter followed by zero or more lower-case letters or digits
+      rule(:loweralphanum) { (lowerletter.repeat(1) >> (lowerletter | digit).repeat) }
+
+      # A upper-case alphanum is an upper-case letter followed by zero or more upper-case letters or digits
+      rule(:upperalphanum) { (upperletter.repeat(1) >> (upperletter | digit).repeat) }
+
+      # A camel-case alphanum is an upper-case letter followed by one or more lower-case letters or digits
+      rule(:camelalphanum) { (upperletter.repeat(1) >> (lowerletter | digit).repeat(1,nil)) }
+
+      #############################################
       # LOGICAL OPERATORS
       #############################################
 
@@ -27,21 +40,27 @@ module Smith
       rule(:iff_op)     { (match('<') >> match('=') >> match('>')).as(:iff) >> space? }
       rule(:not_op)     { match('~').as(:not) >> space? }
 
-      # A connective is AND, OR, IMPLIES or IFF
-      rule(:connective)  { and_op | or_op | implies_op | iff_op }
+      # A unary connective is NOT
+      rule(:unary_connective)   { not_op }
+
+      # A binary connective is AND, OR, IMPLIES or IFF
+      rule(:binary_connective)  { and_op | or_op | implies_op | iff_op }
+
+      # A binary connective is AND, OR, IMPLIES or IFF
+      rule(:connective)         { binary_connective | unary_connective }
 
       #############################################
       # SYMBOLS
       #############################################
 
       # A variable is a lower-case letter followed by 0 or more letters or digits
-      rule(:variable)    { (lowerletter.repeat(1) >> (lowerletter | digit).repeat).as(:var) >> space? }
+      rule(:variable)    { loweralphanum.as(:var) >> space? }
 
       # A constant is an upper-case letter followed by 0 or more upper-case letters or digits
-      rule(:constant)    { (upperletter.repeat(1) >> (upperletter | digit).repeat).as(:const) >> space? }
+      rule(:constant)    { upperalphanum.as(:const) >> space? }
 
       # A predicate is an upper-case letter followed by 1 or more lower-case letters or digits
-      rule(:predicate)   { (upperletter.repeat(1) >> (lowerletter | digit).repeat(1,nil)).as(:pred) >> space? }
+      rule(:predicate)   { (camelalphanum >> camelalphanum.maybe).as(:pred) >> space? }
 
       #############################################
       # GRAMMAR PARTS
@@ -54,25 +73,4 @@ module Smith
       root(:expression)
     end
   end
-end
-
-
-# Tests
-run_tests = true
-if run_tests
-  puts Smith::Logic::FirstOrderLogicParser.new.parse("x3")       == {:var => "x3"}
-  puts Smith::Logic::FirstOrderLogicParser.new.parse("x")        == {:var => "x"}
-  puts Smith::Logic::FirstOrderLogicParser.new.parse("var1")     == {:var => "var1"}
-
-  puts Smith::Logic::FirstOrderLogicParser.new.parse("D")        == {:const => "D"}
-  puts Smith::Logic::FirstOrderLogicParser.new.parse("JIM")      == {:const => "JIM"}
-  puts Smith::Logic::FirstOrderLogicParser.new.parse("JOE ")     == {:const => "JOE"}
-
-  puts Smith::Logic::FirstOrderLogicParser.new.parse("Friend")   == {:pred => "Friend"}
-  puts Smith::Logic::FirstOrderLogicParser.new.parse("Brother ") == {:pred => "Brother"}
-
-  puts Smith::Logic::FirstOrderLogicParser.new.parse("&")   == {:and => "&"}
-  puts Smith::Logic::FirstOrderLogicParser.new.parse("|")   == {:or => "|"}
-  puts Smith::Logic::FirstOrderLogicParser.new.parse("=>")  == {:implies => "=>"}
-  puts Smith::Logic::FirstOrderLogicParser.new.parse("<=>") == {:iff => "<=>"}
 end
