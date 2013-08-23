@@ -1,5 +1,4 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper')
-require File.join(File.dirname(__FILE__), 'fol_parser_spec_helper')
 
 describe Smith::Logic::FolParser do
 
@@ -39,51 +38,71 @@ describe Smith::Logic::FolParser do
     end
 
     context ":variable" do
-      VARIABLE_VALID_EXAMPLES.each do |hash|
-        it "parses '#{hash[:value]}'" do
-          @parser.variable.parse(hash[:value]).should == hash[:expected]
-        end
+      it "parses variables" do
+        @parser.variable.parse("x").should == {:var => "x"}
+        @parser.variable.parse("x3").should  == {:var => "x3"}
+        @parser.variable.parse("foobar45").should == {:var => "foobar45"}
+        @parser.variable.parse("foobar45zw").should == {:var => "foobar45zw"}
       end
     end
 
     context ":constant" do
-      CONSTANT_VALID_EXAMPLES.each do |hash|
-        it "parses '#{hash[:value]}'" do
-          @parser.constant.parse(hash[:value]).should == hash[:expected]
-        end
+      it "parses constants" do
+        @parser.constant.parse("G").should == {:const => "G"}
+        @parser.constant.parse("JULIA").should == {:const => "JULIA"}
+        @parser.constant.parse("JOHNNY5").should == {:const => "JOHNNY5"}
+        @parser.constant.parse("JOHNNY2GOOD").should == {:const => "JOHNNY2GOOD"}
       end
     end
 
     context ":predicate" do
-      PREDICATE_VALID_EXAMPLES.each do |hash|
-        it "parses '#{hash[:value]}'" do
-          @parser.predicate.parse(hash[:value]).should == hash[:expected]
-        end
+      it "parses predicates" do
+        @parser.predicate.parse("Person").should == {:pred => "Person"}
+        @parser.predicate.parse("Brother").should == {:pred => "Brother"}
+        @parser.predicate.parse("NicePerson").should == {:pred => "NicePerson"}
       end
     end
 
     context ":connective" do
-      CONNECTIVE_VALID_EXAMPLES.each do |hash|
-        it "parses '#{hash[:value]}'" do
-          @parser.connective.parse(hash[:value]).should == hash[:expected]
-        end
+      it "parses connectives" do
+        @parser.connective.parse("&").should == {:and => "&"}
+        @parser.connective.parse("|").should == {:or => "|"}
+        @parser.connective.parse("=>").should == {:implies => "=>"}
+        @parser.connective.parse("<=>").should == {:iff => "<=>"}
+        @parser.connective.parse("~").should == {:not => "~"}
+        @parser.connective.parse(" ~").should == {:not => "~"}
+        @parser.connective.parse("& ").should == {:and => "&"}
+        @parser.connective.parse(" | ").should == {:or => "|"}
       end
     end
 
     context ":term" do
-      TERM_VALID_EXAMPLES.each do |hash|
-        it "parses '#{hash[:value]}'" do
-          @parser.term.parse(hash[:value]).should == hash[:expected]
-        end
+      it "parses terms" do
+        @parser.term.parse("x").should == {:var => "x"}
+        @parser.term.parse("x ").should == {:var => "x"}
+        @parser.term.parse("x ").should == {:var => "x"}
+        @parser.term.parse(" x ").should == {:var => "x"}
+        @parser.term.parse("JUSTIN").should == {:const => "JUSTIN"}
+        @parser.term.parse(" JUSTIN").should == {:const => "JUSTIN"}
+        @parser.term.parse("JUSTIN ").should == {:const => "JUSTIN"}
+        @parser.term.parse(" JUSTIN ").should == {:const => "JUSTIN"}
+        @parser.term.parse("AGE(x)").should == {:var => "AGE(x)"}
+        @parser.term.parse(" AGE(x)").should == {:var => "AGE(x)"}
+        @parser.term.parse("AGE(x) ").should == {:var => "AGE(x)"}
+        @parser.term.parse(" AGE(x) ").should == {:var => "AGE(x)"}
       end
     end
 
     context "fail cases" do
-      INVALID_EXAMPLES.each do |value|
-        it "raises exception when parsing '#{value}'" do
-          expect { @parser.parse(value) }.to raise_exception
+        it "raises exception when parsing invalid values" do
+          INVALID_EXAMPLES = [
+            "x_", "fo_obar45", "foo bar",          # Invalid variables
+            "G_", "DAV__ID", "JUS~TIN",            # Invalid constants/functions
+            "Nice_", "Nice_Person", "Nice Person", # Invalid predicates
+          ].each do |invalid|
+            expect { @parser.parse(invalid) }.to raise_exception
+          end
         end
-      end
     end
 
   end
