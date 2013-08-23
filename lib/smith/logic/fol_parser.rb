@@ -55,11 +55,11 @@ module Smith
       # LOGICAL OPERATORS
       #############################################
 
-      rule(:and_op)     { match('&').as(:and) >> space? }
-      rule(:or_op)      { match('\|').as(:or) >> space? }
-      rule(:implies_op) { (match('=') >> match('>')).as(:implies) >> space? }
-      rule(:iff_op)     { (match('<') >> match('=') >> match('>')).as(:iff) >> space? }
-      rule(:not_op)     { match('~').as(:not) >> space? }
+      rule(:and_op)     { match('&').as(:and) }
+      rule(:or_op)      { match('\|').as(:or) }
+      rule(:implies_op) { (match('=') >> match('>')).as(:implies) }
+      rule(:iff_op)     { (match('<') >> match('=') >> match('>')).as(:iff) }
+      rule(:not_op)     { match('~').as(:not) }
 
       # A unary connective is NOT
       rule(:unary_connective)   { not_op }
@@ -68,7 +68,7 @@ module Smith
       rule(:binary_connective)  { and_op | or_op | implies_op | iff_op }
 
       # A binary connective is AND, OR, IMPLIES or IFF
-      rule(:connective)         { binary_connective | unary_connective }
+      rule(:connective)  { space? >> (binary_connective | unary_connective) >> space? }
 
       #############################################
       # SYMBOLS
