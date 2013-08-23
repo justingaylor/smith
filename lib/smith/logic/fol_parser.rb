@@ -31,8 +31,8 @@ module Smith
       # SINGLE CHARACTER RULES
       #############################################
 
-      rule(:lparen)      { match('(') >> space? }
-      rule(:rparen)      { match(')') >> space? }
+      rule(:lparen)      { match('\(') >> space? }
+      rule(:rparen)      { match('\)') >> space? }
       rule(:comma)       { match(',') >> space? }
 
       rule(:space)       { match('\s').repeat(1) }
@@ -83,20 +83,21 @@ module Smith
       # A predicate is an upper-case letter followed by 1 or more lower-case letters or digits
       rule(:predicate)   { (camelalphanum >> camelalphanum.maybe).as(:pred) }
 
-      # A function name is the same as a constant
-      rule(:function)    { constant }
-
       #############################################
       # GRAMMAR PARTS
       #############################################
 
-      # A function call is function name followed by some spaces, a left parenthesis,
+      # An argument list is a list of comma-separated terms
+      rule(:arglist) { (term >> (comma >> term).repeat).as(:args) }
+
+      # A function call is a constant followed by some spaces, a left parenthesis,
       # any number of comma-separated terms and a right parenthesis.
-      rule(:funccall) { (function >> lparen >> term >> (comma >> term).repeat >> space? >> rparen).as(:funccall) }
+      rule(:funcall) { (constant >> lparen >> arglist.maybe >> rparen).as(:funcall) }
+      #rule(:funccall) { (function >> lparen >> term.maybe >> (comma >> term).repeat >> space? >> rparen).as(:funcall) }
 
       # A function is 0 or more spaces, followed by a variable, constant or function
       # call, followed by 0 or more spaces
-      rule(:term)     { space? >> (variable | constant | funccall) >> space? }
+      rule(:term)     { space? >> (funcall | variable | constant) >> space? }
 
       #rule(:expression) { variable | constant | predicate | connective }
 
@@ -108,16 +109,16 @@ module Smith
   end
 end
 
-run_this = false
+run_this = true
 if run_this
   def parse(str)
     fol = Smith::Logic::FolParser.new
 
-    fol.parse(str)
+    fol.arglist.parse(str)
   rescue Parslet::ParseFailed => failure
     puts failure.cause.ascii_tree
   end
 
-puts parse "AGE(x)"
+puts parse "x,y"
 end
 

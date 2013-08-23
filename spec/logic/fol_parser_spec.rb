@@ -8,6 +8,40 @@ describe Smith::Logic::FolParser do
 
   describe "#parse" do
 
+    context ":space" do
+      it "parses spaces" do
+        @parser.space.parse(' ').should == ' '
+      end
+    end
+
+    context ":space?" do
+      it "parses spaces (maybe)" do
+        @parser.space?.parse(' ').should == ' '
+        @parser.space?.parse('').should == ''
+      end
+    end
+
+    context ":lparen" do
+      it "parses left parentheses" do
+        @parser.lparen.parse('(').should == '('
+        @parser.lparen.parse('( ').should == '( '
+      end
+    end
+
+    context ":rparen" do
+      it "parses right parentheses" do
+        @parser.rparen.parse(')').should == ')'
+        @parser.rparen.parse(') ').should == ') '
+      end
+    end
+
+    context ":comma" do
+      it "parses commas" do
+        @parser.comma.parse(',').should == ','
+        @parser.comma.parse(', ').should == ', '
+      end
+    end
+
     context ":loweralphanum" do
       it "parses lower-case alphanumerics" do
         @parser.loweralphanum.parse('a').should == 'a'
@@ -76,6 +110,58 @@ describe Smith::Logic::FolParser do
       end
     end
 
+    context ":arglist" do
+      it "parses function arguments" do
+        @parser.arglist.parse("x").should == {:args=>{:var=>"x"}}
+        @parser.arglist.parse("x,y").should == {:args=>[{:var=>"x"}, {:var=>"y"}]}
+        @parser.arglist.parse("x, y").should == {:args=>[{:var=>"x"}, {:var=>"y"}]}
+        @parser.arglist.parse(" x, y").should == {:args=>[{:var=>"x"}, {:var=>"y"}]}
+        @parser.arglist.parse(" x, y ").should == {:args=>[{:var=>"x"}, {:var=>"y"}]}
+        @parser.arglist.parse(" x, y ").should == {:args=>[{:var=>"x"}, {:var=>"y"}]}
+        @parser.arglist.parse("JOE,y").should == {:args=>[{:const=>"JOE"}, {:var=>"y"}]}
+        @parser.arglist.parse("JOE,TOM").should == {:args=>[{:const=>"JOE"}, {:const=>"TOM"}]}
+        @parser.arglist.parse("JOE,TOM,ANN").should == {
+          :args=>[{:const=>"JOE"}, {:const=>"TOM"}, {:const=>"ANN"}]
+        }
+      end
+
+      it "raises for invalid argument list" do
+        expect { @parser.arglist.parse(",") }.to raise_exception
+        expect { @parser.arglist.parse(",x") }.to raise_exception
+      end
+    end
+
+    context ":funcall" do
+      it "parses function calls" do
+        @parser.funcall.parse("AGE()").should == {:funcall=>{:const=>"AGE"}}
+        @parser.funcall.parse("AGE(x)").should == {:funcall=>{:const=>"AGE", :args=>{:var=>"x"}}}
+        @parser.funcall.parse("AGE(SUE)").should == {:funcall=>{:const=>"AGE", :args=>{:const=>"SUE"}}}
+        @parser.funcall.parse("AGE(x,y)").should == {:funcall=>{:const=>"AGE", :args=>[{:var=>"x"}, {:var=>"y"}]}}
+        @parser.funcall.parse("AGE(x,y,z)").should == {
+          :funcall=>{:const=>"AGE", :args=>[{:var=>"x"}, {:var=>"y"}, {:var=>"z"}]}
+        }
+        @parser.funcall.parse("AGE(x,JOE,TIME())").should == {
+          :funcall=>{:const=>"AGE", :args=>[{:var=>"x"}, {:const=>"JOE"}, {:funcall=>{:const=>"TIME"}}]}
+        }
+        @parser.funcall.parse("SORT(SORT(SORT(X3,X2,X1)))").should == {
+          :funcall=>{
+            :const=>"SORT",
+            :args=>{
+              :funcall=>{
+                :const=>"SORT",
+                :args=>{
+                  :funcall=>{
+                    :const=>"SORT",
+                    :args=>[{:const=>"X3"}, {:const=>"X2"}, {:const=>"X1"}]
+                  }
+                }
+              }
+            }
+          }
+        }
+      end
+    end
+
     context ":term" do
       it "parses terms" do
         @parser.term.parse("x").should == {:var => "x"}
@@ -86,10 +172,10 @@ describe Smith::Logic::FolParser do
         @parser.term.parse(" JUSTIN").should == {:const => "JUSTIN"}
         @parser.term.parse("JUSTIN ").should == {:const => "JUSTIN"}
         @parser.term.parse(" JUSTIN ").should == {:const => "JUSTIN"}
-        @parser.term.parse("AGE(x)").should == {:var => "AGE(x)"}
-        @parser.term.parse(" AGE(x)").should == {:var => "AGE(x)"}
-        @parser.term.parse("AGE(x) ").should == {:var => "AGE(x)"}
-        @parser.term.parse(" AGE(x) ").should == {:var => "AGE(x)"}
+        @parser.term.parse("AGE(x)").should == {:funcall=>{:const=>"AGE", :args=>{:var=>"x"}}}
+        @parser.term.parse(" AGE(x)").should == {:funcall=>{:const=>"AGE", :args=>{:var=>"x"}}}
+        @parser.term.parse("AGE(x) ").should == {:funcall=>{:const=>"AGE", :args=>{:var=>"x"}}}
+        @parser.term.parse(" AGE(x) ").should == {:funcall=>{:const=>"AGE", :args=>{:var=>"x"}}}
       end
     end
 
