@@ -1,3 +1,27 @@
+#--
+# Copyright (c) 2013, Justin Gaylor, justin.gaylor@gmail.com
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+# Made in the USA.
+#++
+
 require 'parslet'
 
 module Smith
@@ -6,9 +30,6 @@ module Smith
       #############################################
       # SINGLE CHARACTER RULES
       #############################################
-      rule(:lowerletter) { match('[a-z]').repeat(1) }
-      rule(:upperletter) { match('[A-Z]').repeat(1) }
-      rule(:digit)       { match('[0-9]').repeat(1) }
 
       rule(:lparen)      { match('(') >> space? }
       rule(:rparen)      { match(')') >> space? }
@@ -22,13 +43,13 @@ module Smith
       #############################################
 
       # A lower-case alphanum is a lower-case letter followed by zero or more lower-case letters or digits
-      rule(:loweralphanum) { (lowerletter.repeat(1) >> (lowerletter | digit).repeat) }
+      rule(:loweralphanum) { match('[a-z]') >> match('[a-z0-9]').repeat }
 
       # A upper-case alphanum is an upper-case letter followed by zero or more upper-case letters or digits
-      rule(:upperalphanum) { (upperletter.repeat(1) >> (upperletter | digit).repeat) }
+      rule(:upperalphanum) { match('[A-Z]') >> match('[A-Z0-9]').repeat }
 
       # A camel-case alphanum is an upper-case letter followed by one or more lower-case letters or digits
-      rule(:camelalphanum) { (upperletter.repeat(1) >> (lowerletter | digit).repeat(1,nil)) }
+      rule(:camelalphanum) { (match('[A-Z]') >> match('[a-z0-9]').repeat).repeat(1) }
 
       #############################################
       # LOGICAL OPERATORS
@@ -54,23 +75,49 @@ module Smith
       #############################################
 
       # A variable is a lower-case letter followed by 0 or more letters or digits
-      rule(:variable)    { loweralphanum.as(:var) >> space? }
+      rule(:variable)    { loweralphanum.as(:var) }
 
       # A constant is an upper-case letter followed by 0 or more upper-case letters or digits
-      rule(:constant)    { upperalphanum.as(:const) >> space? }
+      rule(:constant)    { upperalphanum.as(:const) }
 
       # A predicate is an upper-case letter followed by 1 or more lower-case letters or digits
-      rule(:predicate)   { (camelalphanum >> camelalphanum.maybe).as(:pred) >> space? }
+      rule(:predicate)   { (camelalphanum >> camelalphanum.maybe).as(:pred) }
+
+      # A function name is the same as a constant
+      rule(:function)    { constant }
 
       #############################################
       # GRAMMAR PARTS
       #############################################
-      rule(:expression) { variable | constant | predicate | connective }
+
+      # A function call is function name followed by some spaces, a left parenthesis,
+      # any number of comma-separated terms and a right parenthesis.
+      rule(:funccall) { (function >> lparen >> term >> (comma >> term).repeat >> space? >> rparen).as(:funccall) }
+
+      # A function is 0 or more spaces, followed by a variable, constant or function
+      # call, followed by 0 or more spaces
+      rule(:term)     { space? >> (variable | constant | funccall) >> space? }
+
+      #rule(:expression) { variable | constant | predicate | connective }
 
       #############################################
       # ROOT (where parser begins solving)
       #############################################
-      root(:expression)
+      root(:term)
     end
   end
 end
+
+run_this = false
+if run_this
+  def parse(str)
+    fol = Smith::Logic::FolParser.new
+
+    fol.parse(str)
+  rescue Parslet::ParseFailed => failure
+    puts failure.cause.ascii_tree
+  end
+
+puts parse "AGE(x)"
+end
+
