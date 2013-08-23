@@ -111,7 +111,7 @@ describe Smith::Logic::FolParser do
     end
 
     context ":arglist" do
-      it "parses function arguments" do
+      it "parses function and predicate arguments" do
         @parser.arglist.parse("x").should == {:args=>{:var=>"x"}}
         @parser.arglist.parse("x,y").should == {:args=>[{:var=>"x"}, {:var=>"y"}]}
         @parser.arglist.parse("x, y").should == {:args=>[{:var=>"x"}, {:var=>"y"}]}
