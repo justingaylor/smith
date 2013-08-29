@@ -31,9 +31,9 @@ module Smith
       # SINGLE CHARACTER RULES
       #############################################
 
-      rule(:lparen)      { match('\(') >> space? }
-      rule(:rparen)      { match('\)') >> space? }
-      rule(:comma)       { match(',') >> space? }
+      rule(:lparen)      { space? >> match('\(') >> space? }
+      rule(:rparen)      { space? >> match('\)') >> space? }
+      rule(:comma)       { space? >> match(',') >> space? }
 
       rule(:space)       { match('\s').repeat(1) }
       rule(:space?)      { space.maybe }
@@ -97,14 +97,19 @@ module Smith
 
       # A connective clause is a predicate call followed by a binary operator followed
       # by a predicate call.
-      rule(:connective_clause)  { (predcall.as(:left) >> binary_op >> predcall.as(:right)).as(:clause) }
+      rule(:binary_clause)  { (predcall.as(:left) >> binary_op >> predcall.as(:right)).as(:clause) }
+
+
+      rule(:unary_clause)  { unary_op >> ((lparen >> formula >> rparen) | formula) }
 
       # A function is 0 or more spaces, followed by a variable, constant or function
       # call, followed by 0 or more spaces.
       rule(:term)     { space? >> (funcall | variable | constant) >> space? }
 
-      # A first-order logic formula is a predicate call
-      rule(:formula)  { (connective_clause | predcall).as(:formula) }
+      # A first-order logic sentence is a unary clause OR a binary clause OR a predicate call
+      rule(:sentence)  { (binary_clause | unary_clause | predcall) }
+
+      rule(:formula) { ((lparen >> sentence >> rparen) | sentence).as(:formula) }
 
       #############################################
       # ROOT (where parser begins solving)
@@ -124,6 +129,6 @@ if run_this
     puts failure.cause.ascii_tree
   end
 
-puts parse "Person(JOE) & Person(ANN)"
+puts parse "True() & ~False()"
 end
 

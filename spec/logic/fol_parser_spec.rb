@@ -8,9 +8,12 @@ describe Smith::Logic::FolParser do
 
   describe "#parse" do
 
-    context ":space" do
-      it "parses spaces" do
+    context "when parsing :space" do
+      it "parses valid spaces" do
         @parser.space.parse(' ').should == ' '
+      end
+      it "doesn't match invalid spaces" do
+        expect { @parser.space.parse('') }.to raise_exception
       end
     end
 
@@ -25,6 +28,8 @@ describe Smith::Logic::FolParser do
       it "parses left parentheses" do
         @parser.lparen.parse('(').should == '('
         @parser.lparen.parse('( ').should == '( '
+        @parser.lparen.parse(' (').should == ' ('
+        @parser.lparen.parse(' ( ').should == ' ( '
       end
     end
 
@@ -32,6 +37,8 @@ describe Smith::Logic::FolParser do
       it "parses right parentheses" do
         @parser.rparen.parse(')').should == ')'
         @parser.rparen.parse(') ').should == ') '
+        @parser.rparen.parse(' )').should == ' )'
+        @parser.rparen.parse(' ) ').should == ' ) '
       end
     end
 
@@ -39,6 +46,8 @@ describe Smith::Logic::FolParser do
       it "parses commas" do
         @parser.comma.parse(',').should == ','
         @parser.comma.parse(', ').should == ', '
+        @parser.comma.parse(' ,').should == ' ,'
+        @parser.comma.parse(' , ').should == ' , '
       end
     end
 
@@ -230,20 +239,47 @@ describe Smith::Logic::FolParser do
       end
     end
 
-    context ":connective_clause" do
-      it "parses connective clauses" do
-        @parser.connective_clause.parse("Person(JIM) & Person(DAN)").should == {
+    context ":binary_clause" do
+      it "parses binary (connective) clauses" do
+        @parser.binary_clause.parse("Person(JIM) & Person(DAN)").should == {
           :clause => {
             :left => {:predcall=>{:pred=>"Person", :args=>{:const=>"JIM"}}},
             :and => "&",
             :right => {:predcall=>{:pred=>"Person", :args=>{:const=>"DAN"}}}
           }
         }
-        @parser.connective_clause.parse("Friend(x,y) <=> Friend(y,x)").should == {
+        @parser.binary_clause.parse("Friend(x,y) <=> Friend(y,x)").should == {
           :clause => {
             :left => {:predcall=>{:pred=>"Friend", :args=>[{:var=>"x"},{:var=>"y"}]}},
             :iff => "<=>",
             :right => {:predcall=>{:pred=>"Friend", :args=>[{:var=>"y"},{:var=>"x"}]}}
+          }
+        }
+      end
+    end
+
+    context ":unary_clause" do
+      it "parses unary clauses" do
+        @parser.unary_clause.parse("~Person(GODZILLA)").should == {
+          :not => "~",
+          :formula => {
+            :predcall => {:pred=>"Person", :args=>{:const=>"GODZILLA"}}
+          }
+        }
+        @parser.unary_clause.parse("~ ( Person(GODZILLA) ) ").should == {
+          :not => "~",
+          :formula => {
+            :predcall => {:pred=>"Person", :args=>{:const=>"GODZILLA"}}
+          }
+        }
+        @parser.unary_clause.parse("~(Person(GODZILLA) | Person(MOTHRA))").should == {
+          :not => "~",
+          :formula => {
+            :clause => {
+              :left => {:predcall=>{:pred=>"Person", :args=>{:const=>"GODZILLA"}}},
+              :or => "|",
+              :right => {:predcall=>{:pred=>"Person", :args=>{:const=>"MOTHRA"}}}
+            }
           }
         }
       end
@@ -270,6 +306,27 @@ describe Smith::Logic::FolParser do
               :left => {:predcall=>{:pred=>"Person", :args=>{:const=>"JOE"}}},
               :and => "&",
               :right => {:predcall=>{:pred=>"Person", :args=>{:const=>"ANN"}}}
+            }
+          }
+        }
+        @parser.formula.parse("~Person(GODZILLA) & Person(FUJIMOTO)").should == {
+          :formula => {
+            :not => "~",
+            :formula => {
+              :clause => {
+                :left => {:predcall=>{:pred=>"Person", :args=>{:const=>"GODZILLA"}}},
+                :and => "&",
+                :right => {:predcall=>{:pred=>"Person", :args=>{:const=>"FUJIMOTO"}}}
+              }
+            }
+          }
+        }
+        @parser.formula.parse("(True() & False())").should == {
+          :formula => {
+            :clause => {
+              :left => {:predcall=>{:pred=>"True"}},
+              :and => "&",
+              :right => {:predcall=>{:pred=>"False"}}
             }
           }
         }
