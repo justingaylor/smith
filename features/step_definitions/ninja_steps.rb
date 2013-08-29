@@ -7,5 +7,5 @@ When /^attacked by [a\s]*(.*)$/ do |opponent|
 end
 
 Then /^the ninja should (.*)$/ do |expected_action|
-  assert(@actions.include?(expected_action))
+  @actions.include?(expected_action).should be_true
 end
