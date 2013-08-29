@@ -61,14 +61,11 @@ module Smith
       rule(:iff_op)     { (match('<') >> match('=') >> match('>')).as(:iff) }
       rule(:not_op)     { match('~').as(:not) }
 
-      # A unary connective is NOT
-      rule(:unary_connective)   { not_op }
+      # A unary operator is NOT (possibly preceded or followed by spaces)
+      rule(:unary_op)   { space? >> not_op >> space? }
 
-      # A binary connective is AND, OR, IMPLIES or IFF
-      rule(:binary_connective)  { and_op | or_op | implies_op | iff_op }
-
-      # A binary connective is AND, OR, IMPLIES or IFF
-      rule(:connective)  { space? >> (binary_connective | unary_connective) >> space? }
+      # A binary operator is AND, OR, IMPLIES or IFF (possibly preceded or followed by spaces)
+      rule(:binary_op)  { space? >> (and_op | or_op | implies_op | iff_op) >> space? }
 
       #############################################
       # SYMBOLS
@@ -87,38 +84,46 @@ module Smith
       # GRAMMAR PARTS
       #############################################
 
-      # An argument list is a list of comma-separated terms
+      # An argument list is a list of comma-separated terms.
       rule(:arglist) { (term >> (comma >> term).repeat).as(:args) }
 
       # A function call is a constant followed by some spaces, a left parenthesis,
       # any number of comma-separated terms and a right parenthesis.
       rule(:funcall) { (constant >> lparen >> arglist.maybe >> rparen).as(:funcall) }
-      #rule(:funccall) { (function >> lparen >> term.maybe >> (comma >> term).repeat >> space? >> rparen).as(:funcall) }
+
+      # A function call is a constant followed by some spaces, a left parenthesis,
+      # any number of comma-separated terms and a right parenthesis.
+      rule(:predcall) { (predicate >> lparen >> arglist.maybe >> rparen).as(:predcall) }
+
+      # A connective clause is a predicate call followed by a binary operator followed
+      # by a predicate call.
+      rule(:connective_clause)  { (predcall.as(:left) >> binary_op >> predcall.as(:right)).as(:clause) }
 
       # A function is 0 or more spaces, followed by a variable, constant or function
-      # call, followed by 0 or more spaces
+      # call, followed by 0 or more spaces.
       rule(:term)     { space? >> (funcall | variable | constant) >> space? }
 
-      #rule(:expression) { variable | constant | predicate | connective }
+      # A first-order logic formula is a predicate call
+      rule(:formula)  { (connective_clause | predcall).as(:formula) }
 
       #############################################
       # ROOT (where parser begins solving)
       #############################################
-      root(:term)
+      root(:formula)
     end
   end
 end
 
-run_this = true
+run_this = false
 if run_this
   def parse(str)
     fol = Smith::Logic::FolParser.new
 
-    fol.arglist.parse(str)
+    fol.formula.parse(str)
   rescue Parslet::ParseFailed => failure
     puts failure.cause.ascii_tree
   end
 
-puts parse "x,y"
+puts parse "Person(JOE) & Person(ANN)"
 end
 

@@ -97,16 +97,40 @@ describe Smith::Logic::FolParser do
       end
     end
 
-    context ":connective" do
-      it "parses connectives" do
-        @parser.connective.parse("&").should == {:and => "&"}
-        @parser.connective.parse("|").should == {:or => "|"}
-        @parser.connective.parse("=>").should == {:implies => "=>"}
-        @parser.connective.parse("<=>").should == {:iff => "<=>"}
-        @parser.connective.parse("~").should == {:not => "~"}
-        @parser.connective.parse(" ~").should == {:not => "~"}
-        @parser.connective.parse("& ").should == {:and => "&"}
-        @parser.connective.parse(" | ").should == {:or => "|"}
+    context ":unary_op" do
+      it "parses unary operators" do
+        @parser.unary_op.parse("~").should == {:not => "~"}
+        @parser.unary_op.parse(" ~").should == {:not => "~"}
+        @parser.unary_op.parse("~ ").should == {:not => "~"}
+        @parser.unary_op.parse(" ~ ").should == {:not => "~"}
+      end
+    end
+
+    context ":binary_op" do
+      it "parses binary operators" do
+        @parser.binary_op.parse("&").should == {:and => "&"}
+        @parser.binary_op.parse("& ").should == {:and => "&"}
+        @parser.binary_op.parse(" &").should == {:and => "&"}
+        @parser.binary_op.parse(" & ").should == {:and => "&"}
+        @parser.binary_op.parse("|").should == {:or => "|"}
+        @parser.binary_op.parse(" |").should == {:or => "|"}
+        @parser.binary_op.parse("| ").should == {:or => "|"}
+        @parser.binary_op.parse(" | ").should == {:or => "|"}
+        @parser.binary_op.parse("=>").should == {:implies => "=>"}
+        @parser.binary_op.parse(" =>").should == {:implies => "=>"}
+        @parser.binary_op.parse("=> ").should == {:implies => "=>"}
+        @parser.binary_op.parse(" => ").should == {:implies => "=>"}
+        @parser.binary_op.parse("<=>").should == {:iff => "<=>"}
+        @parser.binary_op.parse(" <=>").should == {:iff => "<=>"}
+        @parser.binary_op.parse("<=> ").should == {:iff => "<=>"}
+        @parser.binary_op.parse(" <=> ").should == {:iff => "<=>"}
+      end
+
+      it "raises for invalid binary operators" do
+        expect { @parser.binary_op.parse("~") }.to raise_exception
+        expect { @parser.binary_op.parse(" ~") }.to raise_exception
+        expect { @parser.binary_op.parse("~ ") }.to raise_exception
+        expect { @parser.binary_op.parse(" ~ ") }.to raise_exception
       end
     end
 
@@ -118,6 +142,7 @@ describe Smith::Logic::FolParser do
         @parser.arglist.parse(" x, y").should == {:args=>[{:var=>"x"}, {:var=>"y"}]}
         @parser.arglist.parse(" x, y ").should == {:args=>[{:var=>"x"}, {:var=>"y"}]}
         @parser.arglist.parse(" x, y ").should == {:args=>[{:var=>"x"}, {:var=>"y"}]}
+        @parser.arglist.parse("JOE").should == {:args=>{:const=>"JOE"}}
         @parser.arglist.parse("JOE,y").should == {:args=>[{:const=>"JOE"}, {:var=>"y"}]}
         @parser.arglist.parse("JOE,TOM").should == {:args=>[{:const=>"JOE"}, {:const=>"TOM"}]}
         @parser.arglist.parse("JOE,TOM,ANN").should == {
@@ -162,6 +187,32 @@ describe Smith::Logic::FolParser do
       end
     end
 
+    context ":predcall" do
+      it "parses predicate calls" do
+        @parser.predcall.parse("IsTrue()").should == {:predcall=>{:pred=>"IsTrue"}}
+        @parser.predcall.parse("Person(x)").should == {:predcall=>{:pred=>"Person", :args=>{:var=>"x"}}}
+        @parser.predcall.parse("Person(SUE)").should == {:predcall=>{:pred=>"Person", :args=>{:const=>"SUE"}}}
+        @parser.predcall.parse("Loves(x,y)").should == {:predcall=>{:pred=>"Loves", :args=>[{:var=>"x"}, {:var=>"y"}]}}
+        @parser.predcall.parse("SameFamily(x,y,z)").should == {
+          :predcall=>{:pred=>"SameFamily", :args=>[{:var=>"x"}, {:var=>"y"}, {:var=>"z"}]}
+        }
+        @parser.predcall.parse("Exist(x,JOE,TIME())").should == {
+          :predcall=>{:pred=>"Exist", :args=>[{:var=>"x"}, {:const=>"JOE"}, {:funcall=>{:const=>"TIME"}}]}
+        }
+        @parser.predcall.parse("Family(SORT(X3,X2,X1))").should == {
+          :predcall=>{
+            :pred=>"Family",
+            :args=>{
+              :funcall=>{
+                :const=>"SORT",
+                :args=>[{:const=>"X3"}, {:const=>"X2"}, {:const=>"X1"}]
+              }
+            }
+          }
+        }
+      end
+    end
+
     context ":term" do
       it "parses terms" do
         @parser.term.parse("x").should == {:var => "x"}
@@ -176,6 +227,52 @@ describe Smith::Logic::FolParser do
         @parser.term.parse(" AGE(x)").should == {:funcall=>{:const=>"AGE", :args=>{:var=>"x"}}}
         @parser.term.parse("AGE(x) ").should == {:funcall=>{:const=>"AGE", :args=>{:var=>"x"}}}
         @parser.term.parse(" AGE(x) ").should == {:funcall=>{:const=>"AGE", :args=>{:var=>"x"}}}
+      end
+    end
+
+    context ":connective_clause" do
+      it "parses connective clauses" do
+        @parser.connective_clause.parse("Person(JIM) & Person(DAN)").should == {
+          :clause => {
+            :left => {:predcall=>{:pred=>"Person", :args=>{:const=>"JIM"}}},
+            :and => "&",
+            :right => {:predcall=>{:pred=>"Person", :args=>{:const=>"DAN"}}}
+          }
+        }
+        @parser.connective_clause.parse("Friend(x,y) <=> Friend(y,x)").should == {
+          :clause => {
+            :left => {:predcall=>{:pred=>"Friend", :args=>[{:var=>"x"},{:var=>"y"}]}},
+            :iff => "<=>",
+            :right => {:predcall=>{:pred=>"Friend", :args=>[{:var=>"y"},{:var=>"x"}]}}
+          }
+        }
+      end
+    end
+
+    context ":formula" do
+      it "parses first-order logic formulas" do
+        @parser.formula.parse("Loves(x,y)").should == {
+          :formula => {
+            :predcall => {:pred=>"Loves", :args=>[{:var=>"x"}, {:var=>"y"}]}
+          }
+        }
+        @parser.formula.parse("Born(x,NOW())").should == {
+          :formula => {
+            :predcall => {
+              :pred => "Born",
+              :args=>[{:var=>"x"}, {:funcall=>{:const=>"NOW"}}]
+            }
+          }
+        }
+        @parser.formula.parse("Person(JOE) & Person(ANN)").should == {
+          :formula => {
+            :clause => {
+              :left => {:predcall=>{:pred=>"Person", :args=>{:const=>"JOE"}}},
+              :and => "&",
+              :right => {:predcall=>{:pred=>"Person", :args=>{:const=>"ANN"}}}
+            }
+          }
+        }
       end
     end
 
